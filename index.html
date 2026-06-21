@@ -168,7 +168,7 @@
             transform: scale(0.85) rotate(-6deg);
         }
 
-        /* ===== PASSWORD OVERLAY (Beautiful) ===== */
+        /* ===== PIN OVERLAY ===== */
         .password-overlay {
             position: fixed;
             top: 0;
@@ -199,7 +199,7 @@
             background: linear-gradient(160deg, #fff8f5, #fce8ec, #fff0f0);
             padding: 32px 28px 38px;
             border-radius: 50px 50px 36px 36px;
-            max-width: 380px;
+            max-width: 420px;
             width: 100%;
             text-align: center;
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3),
@@ -264,59 +264,94 @@
         .password-box .sub-text {
             color: #8f4a60;
             font-size: 0.95rem;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             opacity: 0.8;
             font-weight: 500;
         }
 
-        .password-box .input-wrap {
-            position: relative;
+        /* ===== PIN INPUT BOXES (5 digits) ===== */
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pin-box {
+            width: 50px;
+            height: 62px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2.5px solid #e8d0c8;
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 60px;
-            border: 2px solid #e8d0c8;
-            transition: 0.3s;
-            overflow: hidden;
-        }
-
-        .password-box .input-wrap:focus-within {
-            border-color: #b34a6a;
-            box-shadow: 0 0 0 4px rgba(180, 70, 100, 0.15);
-            background: rgba(255, 255, 255, 0.85);
-        }
-
-        .password-box .input-wrap .input-icon {
-            font-size: 1.3rem;
-            padding: 0 6px 0 18px;
-            opacity: 0.5;
-        }
-
-        .password-box .input-wrap input {
-            width: 100%;
-            padding: 14px 16px 14px 6px;
-            font-size: 1.2rem;
-            border: none;
-            outline: none;
-            background: transparent;
-            text-align: center;
-            letter-spacing: 4px;
-            font-weight: 600;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 700;
             color: #3d1a2a;
+            transition: 0.3s;
             font-family: 'Segoe UI', 'Poppins', sans-serif;
+            user-select: none;
+            position: relative;
         }
 
-        .password-box .input-wrap input::placeholder {
-            letter-spacing: 2px;
-            font-weight: 400;
-            color: #b09090;
-            font-size: 0.9rem;
+        .pin-box.filled {
+            border-color: #b34a6a;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(180, 70, 100, 0.15);
         }
 
+        .pin-box.active {
+            border-color: #b34a6a;
+            box-shadow: 0 0 0 4px rgba(180, 70, 100, 0.15), 0 0 20px rgba(180, 70, 100, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
+        }
+
+        .pin-box .cursor-blink {
+            display: none;
+            width: 2px;
+            height: 28px;
+            background: #b34a6a;
+            animation: blink 0.8s step-end infinite;
+            border-radius: 4px;
+        }
+
+        .pin-box.active .cursor-blink {
+            display: block;
+        }
+
+        .pin-box .pin-value {
+            display: none;
+        }
+
+        .pin-box.filled .pin-value {
+            display: block;
+        }
+
+        .pin-box.filled .cursor-blink {
+            display: none !important;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Hidden real input */
+        .pin-hidden-input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        /* ===== BUTTONS ===== */
         .password-box .btn-group {
             display: flex;
             gap: 10px;
-            margin-top: 18px;
+            margin-top: 6px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -690,7 +725,7 @@
                 letter-spacing: 8px;
             }
             .password-box {
-                padding: 24px 18px 30px;
+                padding: 24px 16px 30px;
                 border-radius: 36px 36px 28px 28px;
             }
             .password-box h2 {
@@ -699,14 +734,18 @@
             .password-box .lock-icon {
                 font-size: 2.8rem;
             }
-            .password-box .input-wrap input {
-                font-size: 1rem;
-                padding: 12px 12px 12px 4px;
-                letter-spacing: 3px;
+            .pin-box {
+                width: 40px;
+                height: 50px;
+                font-size: 1.3rem;
+                border-radius: 10px;
+            }
+            .pin-container {
+                gap: 6px;
             }
             .password-box .btn-password {
-                font-size: 0.9rem;
-                padding: 10px 18px;
+                font-size: 0.85rem;
+                padding: 10px 14px;
                 min-width: 60px;
             }
             .music-player {
@@ -734,9 +773,18 @@
             .envelope .seal {
                 font-size: 1.8rem;
             }
+            .pin-box {
+                width: 34px;
+                height: 42px;
+                font-size: 1.1rem;
+                border-radius: 8px;
+            }
+            .pin-container {
+                gap: 4px;
+            }
             .password-box .btn-group {
                 flex-direction: column;
-                gap: 8px;
+                gap: 6px;
             }
         }
     </style>
@@ -756,30 +804,54 @@
         <button class="music-toggle" id="musicToggle">▶️</button>
     </div>
 
-    <!-- ===== PASSWORD OVERLAY ===== -->
+    <!-- ===== PIN OVERLAY (5 digits) ===== -->
     <div class="password-overlay" id="passwordOverlay">
         <div class="password-box">
             <span class="lock-icon">💌</span>
             <div class="deco-line"></div>
-            <h2>သော့ဖွင့်ပါ</h2>
-            <p class="sub-text">စာအိတ်လေးကိုဖွင့်ဖို့ password ထည့်ပါ</p>
-            <div class="input-wrap">
-                <span class="input-icon">🔑</span>
-                <input type="password" id="passwordInput" placeholder="Password" maxlength="20" autofocus />
+            <h2>Anniversary Date ထည့်ပါ</h2>
+            <p class="sub-text">မမှတ်မိရင် စိတ်ကောက်မယ်</p>
+
+            <!-- PIN Boxes (5) -->
+            <div class="pin-container" id="pinContainer">
+                <div class="pin-box active" data-index="0">
+                    <span class="pin-value"></span>
+                    <span class="cursor-blink"></span>
+                </div>
+                <div class="pin-box" data-index="1">
+                    <span class="pin-value"></span>
+                    <span class="cursor-blink"></span>
+                </div>
+                <div class="pin-box" data-index="2">
+                    <span class="pin-value"></span>
+                    <span class="cursor-blink"></span>
+                </div>
+                <div class="pin-box" data-index="3">
+                    <span class="pin-value"></span>
+                    <span class="cursor-blink"></span>
+                </div>
+                <div class="pin-box" data-index="4">
+                    <span class="pin-value"></span>
+                    <span class="cursor-blink"></span>
+                </div>
             </div>
+
+            <!-- Hidden input for keyboard support -->
+            <input type="text" class="pin-hidden-input" id="pinHiddenInput" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" />
+
             <div class="btn-group">
-                <button class="btn-password" id="unlockBtn">🔓 ဖွင့်မယ်</button>
+                <button class="btn-password secondary" id="clearBtn">🗑 ရှင်းမယ်</button>
                 <button class="btn-password secondary" id="cancelBtn">✖ ပိတ်မယ်</button>
             </div>
-            <div class="error-msg" id="errorMsg">❌ မှားနေပါတယ်။ ထပ်စမ်းပါ။</div>
-            <div class="hint-text">💡 အရိပ်အမြွက် - <span>1234</span></div>
+            <div class="error-msg" id="errorMsg">❌ Wrong PIN Naw MgMg</div>
+            <div class="hint-text">💡 အရိပ်အမြွက် - <span>Anniversary Date</span></div>
         </div>
     </div>
 
     <!-- ===== MAIN CARD ===== -->
     <div class="card">
         <h1>🌸 Birthday Wishes</h1>
-        <div class="sub">✨ ရွှေစာအိတ်လေး နှိပ်လိုက်ပါ ✨</div>
+        <div class="sub">✨ Arbwr ပေးပြီးမှနှိပ်ပါ ✨</div>
 
         <div class="envelope-wrapper">
             <div class="envelope" id="envelope">
@@ -799,21 +871,20 @@
             <button class="btn-reset" id="resetBtn">⟳ Close</button>
         </div>
 
-        <footer>❤️ နှိပ်လိုက်ရုံပါပဲ .. ပွင့်လာပါပြီ ❤️</footer>
+        <footer>❤️I Love You in Every Universe...MgMg ❤️</footer>
     </div>
 
     <script>
         (function() {
             // ========================================
-            // 🔑 CONFIG - CHANGE PASSWORD HERE
+            // 🔑 CONFIG - CHANGE PIN HERE (5 digits)
             // ========================================
-            const PASSWORD = '28226'; // 👈 ခင်ဗျားကြိုက်တဲ့ password ထည့်ပါ
+            const CORRECT_PIN = '28226'; // 👈 ခင်ဗျားကြိုက်တဲ့ PIN ၅ လုံးထည့်ပါ
 
             // ========================================
-            // 🎵 MUSIC CONFIG - YouTube Video
+            // 🎵 MUSIC CONFIG
             // ========================================
-            // ခင်ဗျားပေးလိုက်တဲ့ yung kai - blue (with MINNIE) သီချင်းပါ
-            const VIDEO_ID = 'Kq4dbZJakMs';
+            const VIDEO_ID = 'jDf07wV5gMU';
             const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&si=DsEnnQ48Gg_NMHUF`;
 
             // ========================================
@@ -825,10 +896,11 @@
             const confettiContainer = document.getElementById('confettiContainer');
             const heartsContainer = document.getElementById('floatingHearts');
 
-            // Password overlay
+            // PIN overlay
             const overlay = document.getElementById('passwordOverlay');
-            const passwordInput = document.getElementById('passwordInput');
-            const unlockBtn = document.getElementById('unlockBtn');
+            const pinBoxes = document.querySelectorAll('.pin-box');
+            const hiddenInput = document.getElementById('pinHiddenInput');
+            const clearBtn = document.getElementById('clearBtn');
             const cancelBtn = document.getElementById('cancelBtn');
             const errorMsg = document.getElementById('errorMsg');
 
@@ -841,6 +913,7 @@
             let isUnlocked = false;
             let isMusicPlaying = false;
             let musicInitialized = false;
+            let currentPin = '';
 
             // ========================================
             // FLOATING HEARTS
@@ -887,7 +960,6 @@
             function initMusic() {
                 if (musicInitialized) return;
 
-                // Create YouTube iframe
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 iframe.src = YOUTUBE_URL;
@@ -900,8 +972,6 @@
                 musicIcon.classList.remove('paused');
                 musicToggle.textContent = '⏸️';
                 musicLabel.textContent = '🎵 blue - yung kai';
-
-                console.log('🎵 Music initialized! (yung kai - blue)');
             }
 
             function toggleMusic() {
@@ -916,7 +986,6 @@
                     musicIcon.classList.remove('paused');
                     musicToggle.textContent = '⏸️';
                     musicLabel.textContent = '🎵 blue - yung kai';
-                    // Reload YouTube iframe
                     const iframe = document.getElementById('youtubeAudio');
                     if (iframe) {
                         iframe.src = YOUTUBE_URL;
@@ -932,7 +1001,6 @@
                 }
             }
 
-            // Music player click
             musicPlayer.addEventListener('click', function(e) {
                 if (e.target === musicToggle || e.target.closest('.music-toggle')) {
                     return;
@@ -945,7 +1013,6 @@
                 toggleMusic();
             });
 
-            // Auto-init music on first user interaction
             function autoInitMusic() {
                 if (!musicInitialized) {
                     initMusic();
@@ -957,38 +1024,91 @@
             document.addEventListener('touchstart', autoInitMusic);
 
             // ========================================
-            // PASSWORD
+            // PIN LOGIC (5 digits)
             // ========================================
-            function showPasswordOverlay() {
-                overlay.classList.remove('hidden');
-                passwordInput.value = '';
-                errorMsg.classList.remove('show');
-                setTimeout(() => {
-                    passwordInput.focus();
-                }, 300);
+            function updatePinDisplay() {
+                const pinArray = currentPin.split('');
+                pinBoxes.forEach((box, index) => {
+                    const valueSpan = box.querySelector('.pin-value');
+                    const isFilled = index < pinArray.length;
+
+                    if (isFilled) {
+                        valueSpan.textContent = pinArray[index];
+                        box.classList.add('filled');
+                        box.classList.remove('active');
+                    } else {
+                        valueSpan.textContent = '';
+                        box.classList.remove('filled');
+                        if (index === pinArray.length) {
+                            box.classList.add('active');
+                        } else {
+                            box.classList.remove('active');
+                        }
+                    }
+                });
+
+                // If all filled (5 digits), check PIN
+                if (currentPin.length === 5) {
+                    checkPin();
+                }
             }
 
-            function hidePasswordOverlay() {
-                overlay.classList.add('hidden');
-            }
-
-            function checkPassword() {
-                const entered = passwordInput.value.trim();
-                if (entered === PASSWORD) {
+            function checkPin() {
+                if (currentPin === CORRECT_PIN) {
                     errorMsg.classList.remove('show');
                     hidePasswordOverlay();
                     isUnlocked = true;
                     openEnvelope();
                 } else {
                     errorMsg.classList.add('show');
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                    const wrap = passwordInput.closest('.input-wrap');
-                    wrap.style.animation = 'shake 0.4s ease';
+                    const container = document.getElementById('pinContainer');
+                    container.style.animation = 'shake 0.4s ease';
                     setTimeout(() => {
-                        wrap.style.animation = '';
+                        container.style.animation = '';
                     }, 400);
+                    setTimeout(() => {
+                        clearPin();
+                    }, 600);
                 }
+            }
+
+            function clearPin() {
+                currentPin = '';
+                updatePinDisplay();
+                errorMsg.classList.remove('show');
+                hiddenInput.value = '';
+                pinBoxes[0].classList.add('active');
+            }
+
+            function addDigit(digit) {
+                if (currentPin.length < 5) {
+                    currentPin += digit;
+                    hiddenInput.value = currentPin;
+                    updatePinDisplay();
+                }
+            }
+
+            function removeLastDigit() {
+                if (currentPin.length > 0) {
+                    currentPin = currentPin.slice(0, -1);
+                    hiddenInput.value = currentPin;
+                    updatePinDisplay();
+                }
+            }
+
+            // ========================================
+            // PIN OVERLAY
+            // ========================================
+            function showPasswordOverlay() {
+                overlay.classList.remove('hidden');
+                clearPin();
+                setTimeout(() => {
+                    hiddenInput.focus();
+                }, 300);
+            }
+
+            function hidePasswordOverlay() {
+                overlay.classList.add('hidden');
             }
 
             // ========================================
@@ -1006,7 +1126,6 @@
                 void envelope.offsetWidth;
                 envelope.classList.add('shake');
 
-                // Auto-play music when opened
                 if (!musicInitialized) {
                     initMusic();
                 } else if (isMusicPlaying) {
@@ -1044,28 +1163,49 @@
             // ========================================
             // EVENT LISTENERS
             // ========================================
+
             envelope.addEventListener('click', toggleEnvelope);
 
-            unlockBtn.addEventListener('click', checkPassword);
+            hiddenInput.addEventListener('input', function(e) {
+                const val = this.value.replace(/\D/g, '').slice(0, 5);
+                this.value = val;
+                currentPin = val;
+                updatePinDisplay();
+            });
 
-            passwordInput.addEventListener('keydown', function(e) {
+            hiddenInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    removeLastDigit();
+                }
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    checkPassword();
+                    if (currentPin.length === 5) {
+                        checkPin();
+                    }
                 }
+            });
+
+            pinBoxes.forEach((box) => {
+                box.addEventListener('click', function() {
+                    hiddenInput.focus();
+                });
+            });
+
+            clearBtn.addEventListener('click', function() {
+                clearPin();
+                hiddenInput.focus();
             });
 
             cancelBtn.addEventListener('click', function() {
                 hidePasswordOverlay();
-                passwordInput.value = '';
-                errorMsg.classList.remove('show');
+                clearPin();
             });
 
             overlay.addEventListener('click', function(e) {
                 if (e.target === overlay) {
                     hidePasswordOverlay();
-                    passwordInput.value = '';
-                    errorMsg.classList.remove('show');
+                    clearPin();
                 }
             });
 
@@ -1074,8 +1214,35 @@
                 closeEnvelope();
             });
 
-            console.log('🎂 Password-protected birthday envelope ready!');
-            console.log('🔑 Default password: 1234');
+            // ========================================
+            // KEYBOARD SHORTCUTS
+            // ========================================
+            document.addEventListener('keydown', function(e) {
+                if (overlay.classList.contains('hidden')) return;
+
+                const key = e.key;
+                if (key >= '0' && key <= '9') {
+                    e.preventDefault();
+                    addDigit(key);
+                }
+                if (key === 'Backspace') {
+                    e.preventDefault();
+                    removeLastDigit();
+                }
+                if (key === 'Enter') {
+                    e.preventDefault();
+                    if (currentPin.length === 5) {
+                        checkPin();
+                    }
+                }
+                if (key === 'Escape') {
+                    hidePasswordOverlay();
+                    clearPin();
+                }
+            });
+
+            console.log('🎂 PIN-protected birthday envelope ready! (5 digits)');
+            console.log('🔑 Default PIN: 12345');
             console.log('🎵 Music: yung kai - blue (with MINNIE)');
         })();
     </script>
