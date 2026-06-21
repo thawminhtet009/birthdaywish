@@ -683,6 +683,18 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ===== MUSIC IFRAME (hidden but active) ===== */
+        #youtubeAudio {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            border: none;
+            opacity: 0.01;
+            pointer-events: none;
+        }
+
         /* ----- Responsive (Mobile First) ----- */
         @media (max-width: 480px) {
             .card {
@@ -804,6 +816,9 @@
         <button class="music-toggle" id="musicToggle">▶️</button>
     </div>
 
+    <!-- ===== YOUTUBE IFRAME (hidden) ===== -->
+    <iframe id="youtubeAudio" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
     <!-- ===== PIN OVERLAY (5 digits) ===== -->
     <div class="password-overlay" id="passwordOverlay">
         <div class="password-box">
@@ -871,7 +886,7 @@
             <button class="btn-reset" id="resetBtn">⟳ Close</button>
         </div>
 
-        <footer>❤️I Love You in Every Universe...MgMg ❤️</footer>
+        <footer>❤️ I Love You in Every Universe...MgMg ❤️</footer>
     </div>
 
     <script>
@@ -885,7 +900,7 @@
             // 🎵 MUSIC CONFIG
             // ========================================
             const VIDEO_ID = 'jDf07wV5gMU';
-            const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&si=DsEnnQ48Gg_NMHUF`;
+            const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&si=DsEnnQ48Gg_NMHUF&mute=0`;
 
             // ========================================
             // DOM REFS
@@ -909,6 +924,7 @@
             const musicIcon = document.getElementById('musicIcon');
             const musicLabel = document.getElementById('musicLabel');
             const musicToggle = document.getElementById('musicToggle');
+            const youtubeIframe = document.getElementById('youtubeAudio');
 
             let isUnlocked = false;
             let isMusicPlaying = false;
@@ -955,52 +971,58 @@
             }
 
             // ========================================
-            // MUSIC
+            // MUSIC - FIXED VERSION
             // ========================================
-            function initMusic() {
-                if (musicInitialized) return;
-
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = YOUTUBE_URL;
-                iframe.allow = 'autoplay; encrypted-media';
-                iframe.id = 'youtubeAudio';
-                document.body.appendChild(iframe);
-
-                musicInitialized = true;
-                isMusicPlaying = true;
-                musicIcon.classList.remove('paused');
-                musicToggle.textContent = '⏸️';
-                musicLabel.textContent = '🎵 blue - yung kai';
-            }
-
-            function toggleMusic() {
+            function playMusic() {
                 if (!musicInitialized) {
-                    initMusic();
-                    return;
-                }
-
-                isMusicPlaying = !isMusicPlaying;
-
-                if (isMusicPlaying) {
+                    // First time - set iframe src
+                    youtubeIframe.src = YOUTUBE_URL;
+                    musicInitialized = true;
+                    isMusicPlaying = true;
                     musicIcon.classList.remove('paused');
                     musicToggle.textContent = '⏸️';
                     musicLabel.textContent = '🎵 blue - yung kai';
-                    const iframe = document.getElementById('youtubeAudio');
-                    if (iframe) {
-                        iframe.src = YOUTUBE_URL;
-                    }
+                    
+                    // Try to force play after a moment
+                    setTimeout(() => {
+                        try {
+                            // Reload iframe to ensure it plays
+                            youtubeIframe.src = YOUTUBE_URL;
+                        } catch(e) {}
+                    }, 500);
+                } else if (isMusicPlaying) {
+                    // Already playing, do nothing
+                    return;
                 } else {
-                    musicIcon.classList.add('paused');
-                    musicToggle.textContent = '▶️';
-                    musicLabel.textContent = '⏸ ရပ်ထား';
-                    const iframe = document.getElementById('youtubeAudio');
-                    if (iframe) {
-                        iframe.src = '';
-                    }
+                    // Was paused, resume
+                    youtubeIframe.src = YOUTUBE_URL;
+                    isMusicPlaying = true;
+                    musicIcon.classList.remove('paused');
+                    musicToggle.textContent = '⏸️';
+                    musicLabel.textContent = '🎵 blue - yung kai';
                 }
             }
 
+            function pauseMusic() {
+                if (musicInitialized && isMusicPlaying) {
+                    // Pause by removing src
+                    youtubeIframe.src = '';
+                    isMusicPlaying = false;
+                    musicIcon.classList.add('paused');
+                    musicToggle.textContent = '▶️';
+                    musicLabel.textContent = '⏸ ရပ်ထား';
+                }
+            }
+
+            function toggleMusic() {
+                if (isMusicPlaying) {
+                    pauseMusic();
+                } else {
+                    playMusic();
+                }
+            }
+
+            // Music player click
             musicPlayer.addEventListener('click', function(e) {
                 if (e.target === musicToggle || e.target.closest('.music-toggle')) {
                     return;
@@ -1012,16 +1034,6 @@
                 e.stopPropagation();
                 toggleMusic();
             });
-
-            function autoInitMusic() {
-                if (!musicInitialized) {
-                    initMusic();
-                }
-                document.removeEventListener('click', autoInitMusic);
-                document.removeEventListener('touchstart', autoInitMusic);
-            }
-            document.addEventListener('click', autoInitMusic);
-            document.addEventListener('touchstart', autoInitMusic);
 
             // ========================================
             // PIN LOGIC (5 digits)
@@ -1047,7 +1059,6 @@
                     }
                 });
 
-                // If all filled (5 digits), check PIN
                 if (currentPin.length === 5) {
                     checkPin();
                 }
@@ -1126,14 +1137,8 @@
                 void envelope.offsetWidth;
                 envelope.classList.add('shake');
 
-                if (!musicInitialized) {
-                    initMusic();
-                } else if (isMusicPlaying) {
-                    const iframe = document.getElementById('youtubeAudio');
-                    if (iframe) {
-                        iframe.src = YOUTUBE_URL;
-                    }
-                }
+                // 🎵 PLAY MUSIC when envelope opens!
+                playMusic();
 
                 setTimeout(() => {
                     fireConfetti();
@@ -1150,6 +1155,8 @@
                 content.classList.remove('show');
                 confettiContainer.innerHTML = '';
                 isUnlocked = false;
+                // Optionally pause music when closed
+                // pauseMusic(); // uncomment if you want music to stop on close
             }
 
             function toggleEnvelope() {
@@ -1242,8 +1249,9 @@
             });
 
             console.log('🎂 PIN-protected birthday envelope ready! (5 digits)');
-            console.log('🔑 Default PIN: 12345');
+            console.log('🔑 Default PIN: 28226');
             console.log('🎵 Music: yung kai - blue (with MINNIE)');
+            console.log('💡 Click the envelope to open and play music!');
         })();
     </script>
 
