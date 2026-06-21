@@ -683,7 +683,34 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ===== MUSIC IFRAME (hidden but active) ===== */
+        /* ===== MOBILE AUDIO PLAYER (visible for mobile) ===== */
+        #mobileAudioPlayer {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 99;
+            background: rgba(255, 240, 245, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            padding: 8px 14px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            font-size: 0.7rem;
+            color: #7a2e4a;
+            font-weight: 600;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            #mobileAudioPlayer {
+                display: flex;
+            }
+        }
+
+        /* ===== MUSIC IFRAME (hidden) ===== */
         #youtubeAudio {
             position: fixed;
             top: -9999px;
@@ -775,6 +802,12 @@
                 font-size: 0.75rem;
                 margin-top: 14px;
             }
+            #mobileAudioPlayer {
+                bottom: 70px;
+                right: 12px;
+                font-size: 0.6rem;
+                padding: 6px 12px;
+            }
         }
 
         @media (max-width: 380px) {
@@ -814,6 +847,12 @@
         <span class="music-icon" id="musicIcon">🎵</span>
         <span class="music-label" id="musicLabel">blue - yung kai</span>
         <button class="music-toggle" id="musicToggle">▶️</button>
+    </div>
+
+    <!-- ===== MOBILE AUDIO (visible on mobile) ===== -->
+    <div id="mobileAudioPlayer">
+        <span>🎵</span>
+        <span id="mobileAudioStatus">⏸ Tap to play</span>
     </div>
 
     <!-- ===== YOUTUBE IFRAME (hidden) ===== -->
@@ -894,10 +933,10 @@
             // ========================================
             // 🔑 CONFIG - CHANGE PIN HERE (5 digits)
             // ========================================
-            const CORRECT_PIN = '28226'; // 👈 ခင်ဗျားကြိုက်တဲ့ PIN ၅ လုံးထည့်ပါ
+            const CORRECT_PIN = '28226';
 
             // ========================================
-            // 🎵 MUSIC CONFIG
+            // 🎵 MUSIC CONFIG - FIXED for MOBILE
             // ========================================
             const VIDEO_ID = 'IpFX2vq8HKw';
             const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}&si=DsEnnQ48Gg_NMHUF&mute=0`;
@@ -911,7 +950,6 @@
             const confettiContainer = document.getElementById('confettiContainer');
             const heartsContainer = document.getElementById('floatingHearts');
 
-            // PIN overlay
             const overlay = document.getElementById('passwordOverlay');
             const pinBoxes = document.querySelectorAll('.pin-box');
             const hiddenInput = document.getElementById('pinHiddenInput');
@@ -919,12 +957,12 @@
             const cancelBtn = document.getElementById('cancelBtn');
             const errorMsg = document.getElementById('errorMsg');
 
-            // Music
             const musicPlayer = document.getElementById('musicPlayer');
             const musicIcon = document.getElementById('musicIcon');
             const musicLabel = document.getElementById('musicLabel');
             const musicToggle = document.getElementById('musicToggle');
             const youtubeIframe = document.getElementById('youtubeAudio');
+            const mobileAudioStatus = document.getElementById('mobileAudioStatus');
 
             let isUnlocked = false;
             let isMusicPlaying = false;
@@ -971,46 +1009,87 @@
             }
 
             // ========================================
-            // MUSIC - FIXED VERSION
+            // 🎵 MUSIC - MOBILE FIXED
             // ========================================
             function playMusic() {
+                // Method 1: Try iframe (works on desktop)
                 if (!musicInitialized) {
-                    // First time - set iframe src
                     youtubeIframe.src = YOUTUBE_URL;
                     musicInitialized = true;
                     isMusicPlaying = true;
                     musicIcon.classList.remove('paused');
                     musicToggle.textContent = '⏸️';
                     musicLabel.textContent = '🎵 blue - yung kai';
-                    
-                    // Try to force play after a moment
+                    mobileAudioStatus.textContent = '▶ Playing...';
+
+                    // Method 2: Mobile fallback - create audio element with direct mp3
                     setTimeout(() => {
-                        try {
-                            // Reload iframe to ensure it plays
-                            youtubeIframe.src = YOUTUBE_URL;
-                        } catch(e) {}
-                    }, 500);
+                        tryMobileAudio();
+                    }, 1000);
                 } else if (isMusicPlaying) {
-                    // Already playing, do nothing
                     return;
                 } else {
-                    // Was paused, resume
                     youtubeIframe.src = YOUTUBE_URL;
                     isMusicPlaying = true;
                     musicIcon.classList.remove('paused');
                     musicToggle.textContent = '⏸️';
                     musicLabel.textContent = '🎵 blue - yung kai';
+                    mobileAudioStatus.textContent = '▶ Playing...';
+                    setTimeout(() => {
+                        tryMobileAudio();
+                    }, 500);
                 }
             }
 
+            function tryMobileAudio() {
+                // Mobile fallback: create an audio element with a direct MP3 link
+                const existingAudio = document.getElementById('mobileFallbackAudio');
+                if (existingAudio) {
+                    existingAudio.play().catch(() => {});
+                    return;
+                }
+
+                const audio = document.createElement('audio');
+                audio.id = 'mobileFallbackAudio';
+                audio.loop = true;
+                audio.volume = 0.5;
+                audio.setAttribute('playsinline', '');
+                audio.setAttribute('webkit-playsinline', '');
+                
+                // Direct MP3 source from YouTube (converted)
+                audio.src = 'https://www.dropbox.com/scl/fi/olgij1mo0bdcj2y5hpv4c/yung-kai-blue-official-music-video.mp3?rlkey=ku685gldzi2ehll3n2zipgqau&st=3czdx99a&dl=1';
+                
+                document.body.appendChild(audio);
+                
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    musicIcon.classList.remove('paused');
+                    musicToggle.textContent = '⏸️';
+                    mobileAudioStatus.textContent = '▶ Playing...';
+                }).catch((err) => {
+                    // If direct mp3 fails, try alternative source
+                    audio.src = 'https://www.dropbox.com/scl/fi/olgij1mo0bdcj2y5hpv4c/yung-kai-blue-official-music-video.mp3?rlkey=ku685gldzi2ehll3n2zipgqau&st=3czdx99a&dl=1';
+                    audio.play().catch(() => {
+                        // Silent fail - user interaction may be needed
+                        mobileAudioStatus.textContent = '⏸ Tap to play';
+                    });
+                });
+            }
+
             function pauseMusic() {
-                if (musicInitialized && isMusicPlaying) {
-                    // Pause by removing src
-                    youtubeIframe.src = '';
-                    isMusicPlaying = false;
-                    musicIcon.classList.add('paused');
-                    musicToggle.textContent = '▶️';
-                    musicLabel.textContent = '⏸ ရပ်ထား';
+                isMusicPlaying = false;
+                musicIcon.classList.add('paused');
+                musicToggle.textContent = '▶️';
+                musicLabel.textContent = '⏸ ရပ်ထား';
+                mobileAudioStatus.textContent = '⏸ Paused';
+
+                // Pause iframe
+                youtubeIframe.src = '';
+
+                // Pause mobile audio
+                const audio = document.getElementById('mobileFallbackAudio');
+                if (audio) {
+                    audio.pause();
                 }
             }
 
@@ -1018,6 +1097,7 @@
                 if (isMusicPlaying) {
                     pauseMusic();
                 } else {
+                    // User interaction required for mobile
                     playMusic();
                 }
             }
@@ -1035,8 +1115,13 @@
                 toggleMusic();
             });
 
+            // Mobile audio status click to toggle
+            document.getElementById('mobileAudioPlayer').addEventListener('click', function() {
+                toggleMusic();
+            });
+
             // ========================================
-            // PIN LOGIC (5 digits)
+            // PIN LOGIC
             // ========================================
             function updatePinDisplay() {
                 const pinArray = currentPin.split('');
@@ -1155,8 +1240,6 @@
                 content.classList.remove('show');
                 confettiContainer.innerHTML = '';
                 isUnlocked = false;
-                // Optionally pause music when closed
-                // pauseMusic(); // uncomment if you want music to stop on close
             }
 
             function toggleEnvelope() {
@@ -1248,10 +1331,10 @@
                 }
             });
 
-            console.log('🎂 PIN-protected birthday envelope ready! (5 digits)');
+            console.log('🎂 PIN-protected birthday envelope ready!');
             console.log('🔑 Default PIN: 28226');
-            console.log('🎵 Music: yung kai - blue (with MINNIE)');
-            console.log('💡 Click the envelope to open and play music!');
+            console.log('🎵 Music will play when envelope opens');
+            console.log('💡 Tap the envelope to open and play music!');
         })();
     </script>
 
