@@ -1057,7 +1057,7 @@
                 audio.setAttribute('webkit-playsinline', '');
                 
                 // Direct MP3 source from YouTube (converted)
-                audio.src = '/yung kai - blue (official music video).mp3';
+                audio.src = './birthdaywish/yung kai - blue (official music video).mp3';
                 
                 document.body.appendChild(audio);
                 
@@ -1068,7 +1068,7 @@
                     mobileAudioStatus.textContent = '▶ Playing...';
                 }).catch((err) => {
                     // If direct mp3 fails, try alternative source
-                    audio.src = '/yung kai - blue (official music video).mp3';
+                    audio.src = './birthdaywish/yung kai - blue (official music video).mp3';
                     audio.play().catch(() => {
                         // Silent fail - user interaction may be needed
                         mobileAudioStatus.textContent = '⏸ Tap to play';
