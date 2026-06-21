@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>🎂 Birthday Envelope 💌</title>
     <style>
-        /* ----- global reset & base ----- */
         * {
             margin: 0;
             padding: 0;
@@ -62,6 +61,7 @@
             margin-bottom: 16px;
         }
 
+        /* ----- ENVELOPE ----- */
         .envelope-wrapper {
             display: flex;
             justify-content: center;
@@ -175,7 +175,7 @@
             background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            display: flex;
+            display: none; /* Hidden by default */
             justify-content: center;
             align-items: center;
             z-index: 10000;
@@ -183,8 +183,8 @@
             animation: fadeIn 0.4s ease;
         }
 
-        .password-overlay.hidden {
-            display: none;
+        .password-overlay.show {
+            display: flex;
         }
 
         @keyframes fadeIn {
@@ -397,6 +397,7 @@
             color: #7a2e4a;
         }
 
+        /* ----- BIRTHDAY CONTENT ----- */
         .birthday-content {
             max-height: 0;
             opacity: 0;
@@ -790,12 +791,9 @@
             const CORRECT_PIN = '28226';
 
             // ========================================
-            // 🎵 MUSIC - USE YOUR MP3 FILE FROM GITHUB
+            // 🎵 MUSIC - Use your MP3 file
             // ========================================
-            // သင့် MP3 ဖိုင်ကို ဒီလိုခေါ်ပါ:
             const MUSIC_URL = './yung kai - blue (official music video).mp3';
-            // OR ဒီလိုလည်းရပါတယ်:
-            // const MUSIC_URL = '/birthdaywish/yung%20kai%20-%20blue%20(official%20music%20video).mp3';
 
             // ========================================
             // DOM REFS
@@ -861,7 +859,7 @@
             }
 
             // ========================================
-            // 🎵 MUSIC - GITHUB MP3
+            // 🎵 MUSIC
             // ========================================
             function initAudio() {
                 if (!audioElement) {
@@ -934,8 +932,18 @@
             });
 
             // ========================================
-            // PIN LOGIC
+            // PIN LOGIC - SHOW WHEN ENVELOPE CLICKED
             // ========================================
+            function showPasswordOverlay() {
+                overlay.classList.add('show');
+                clearPin();
+                setTimeout(() => { hiddenInput.focus(); }, 300);
+            }
+
+            function hidePasswordOverlay() {
+                overlay.classList.remove('show');
+            }
+
             function updatePinDisplay() {
                 const pinArray = currentPin.split('');
                 pinBoxes.forEach((box, index) => {
@@ -999,19 +1007,8 @@
                 }
             }
 
-            function showPasswordOverlay() {
-                overlay.classList.remove('hidden');
-                clearPin();
-                setTimeout(() => { hiddenInput.focus(); }, 300);
-            }
-
-            function hidePasswordOverlay() {
-                overlay.classList.add('hidden');
-            }
-
             function openEnvelope() {
                 if (!isUnlocked) {
-                    showPasswordOverlay();
                     return;
                 }
                 envelope.classList.add('open');
@@ -1037,6 +1034,7 @@
                 if (envelope.classList.contains('open')) {
                     closeEnvelope();
                 } else {
+                    // Show PIN overlay when envelope is clicked
                     showPasswordOverlay();
                 }
             }
@@ -1094,8 +1092,9 @@
                 closeEnvelope();
             });
 
+            // Keyboard shortcuts
             document.addEventListener('keydown', function(e) {
-                if (overlay.classList.contains('hidden')) return;
+                if (!overlay.classList.contains('show')) return;
                 const key = e.key;
                 if (key >= '0' && key <= '9') {
                     e.preventDefault();
@@ -1119,9 +1118,9 @@
 
             console.log('🎂 Birthday Envelope ready!');
             console.log('🔑 PIN: 28226');
-            console.log('🎵 MP3 from: ' + MUSIC_URL);
-            console.log('💡 Tap envelope to open & play music!');
+            console.log('💡 Click envelope to enter PIN!');
         })();
     </script>
+
 </body>
 </html>
